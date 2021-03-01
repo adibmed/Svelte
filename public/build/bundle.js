@@ -391,19 +391,19 @@ var app = (function () {
     			li = element("li");
     			img = element("img");
     			attr_dev(h1, "class", "svelte-1e9puaw");
-    			add_location(h1, file, 23, 2, 469);
-    			add_location(h2, file, 24, 2, 494);
+    			add_location(h1, file, 22, 2, 487);
+    			add_location(h2, file, 23, 2, 512);
     			attr_dev(input, "type", "text");
     			attr_dev(input, "placeholder", "search pokemon");
-    			add_location(input, file, 25, 2, 512);
+    			add_location(input, file, 24, 2, 530);
     			if (img.src !== (img_src_value = `./pokemon/${/*name*/ ctx[1]}.jpg`)) attr_dev(img, "src", img_src_value);
     			attr_dev(img, "alt", /*name*/ ctx[1]);
     			attr_dev(img, "width", "200");
-    			add_location(img, file, 28, 8, 615);
-    			add_location(li, file, 28, 4, 611);
-    			add_location(ul, file, 27, 2, 602);
+    			add_location(img, file, 32, 8, 651);
+    			add_location(li, file, 32, 4, 647);
+    			add_location(ul, file, 31, 2, 638);
     			attr_dev(main, "class", "svelte-1e9puaw");
-    			add_location(main, file, 22, 0, 460);
+    			add_location(main, file, 21, 0, 478);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -477,10 +477,11 @@ var app = (function () {
     function instance($$self, $$props, $$invalidate) {
     	let { $$slots: slots = {}, $$scope } = $$props;
     	validate_slots("App", slots, []);
+    	let { user } = $$props;
     	let name = "pikachu";
     	let src = "./pokemon/abra.jpg";
     	let pokemons = {};
-    	let { user } = $$props;
+    	let result = {};
 
     	onMount(async () => {
     		await fetch("https://pokeapi.co/api/v2/pokemon?limit=1118&offset=0").then(res => res.json()).then(response => {
@@ -506,18 +507,20 @@ var app = (function () {
 
     	$$self.$capture_state = () => ({
     		onMount,
+    		user,
     		name,
     		src,
     		pokemons,
-    		user,
+    		result,
     		change
     	});
 
     	$$self.$inject_state = $$props => {
+    		if ("user" in $$props) $$invalidate(0, user = $$props.user);
     		if ("name" in $$props) $$invalidate(1, name = $$props.name);
     		if ("src" in $$props) src = $$props.src;
     		if ("pokemons" in $$props) pokemons = $$props.pokemons;
-    		if ("user" in $$props) $$invalidate(0, user = $$props.user);
+    		if ("result" in $$props) result = $$props.result;
     	};
 
     	if ($$props && "$$inject" in $$props) {
