@@ -37,6 +37,12 @@ var app = (function () {
     function detach(node) {
         node.parentNode.removeChild(node);
     }
+    function destroy_each(iterations, detaching) {
+        for (let i = 0; i < iterations.length; i += 1) {
+            if (iterations[i])
+                iterations[i].d(detaching);
+        }
+    }
     function element(name) {
         return document.createElement(name);
     }
@@ -323,6 +329,15 @@ var app = (function () {
         dispatch_dev('SvelteDOMSetData', { node: text, data });
         text.data = data;
     }
+    function validate_each_argument(arg) {
+        if (typeof arg !== 'string' && !(arg && typeof arg === 'object' && 'length' in arg)) {
+            let msg = '{#each} only iterates over array-like objects.';
+            if (typeof Symbol === 'function' && arg && Symbol.iterator in arg) {
+                msg += ' You can use a spread to convert this iterable into an array.';
+            }
+            throw new Error(msg);
+        }
+    }
     function validate_slots(name, slot, keys) {
         for (const slot_key of Object.keys(slot)) {
             if (!~keys.indexOf(slot_key)) {
@@ -355,6 +370,77 @@ var app = (function () {
     const { console: console_1 } = globals;
     const file = "src/App.svelte";
 
+    function get_each_context(ctx, list, i) {
+    	const child_ctx = ctx.slice();
+    	child_ctx[6] = list[i];
+    	return child_ctx;
+    }
+
+    // (34:4) {#each result as pokemon}
+    function create_each_block(ctx) {
+    	let div;
+    	let img;
+    	let img_src_value;
+    	let img_alt_value;
+    	let t0;
+    	let p;
+    	let t1_value = /*pokemon*/ ctx[6].name + "";
+    	let t1;
+    	let t2;
+
+    	const block = {
+    		c: function create() {
+    			div = element("div");
+    			img = element("img");
+    			t0 = space();
+    			p = element("p");
+    			t1 = text(t1_value);
+    			t2 = space();
+    			if (img.src !== (img_src_value = `./pokemon/${/*pokemon*/ ctx[6].name}.jpg`)) attr_dev(img, "src", img_src_value);
+    			attr_dev(img, "alt", img_alt_value = /*pokemon*/ ctx[6].name);
+    			attr_dev(img, "width", "100");
+    			attr_dev(img, "class", "svelte-7z1k4i");
+    			add_location(img, file, 35, 8, 764);
+    			attr_dev(p, "class", "svelte-7z1k4i");
+    			add_location(p, file, 40, 8, 887);
+    			attr_dev(div, "class", "container__item svelte-7z1k4i");
+    			add_location(div, file, 34, 6, 726);
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, div, anchor);
+    			append_dev(div, img);
+    			append_dev(div, t0);
+    			append_dev(div, p);
+    			append_dev(p, t1);
+    			append_dev(div, t2);
+    		},
+    		p: function update(ctx, dirty) {
+    			if (dirty & /*result*/ 4 && img.src !== (img_src_value = `./pokemon/${/*pokemon*/ ctx[6].name}.jpg`)) {
+    				attr_dev(img, "src", img_src_value);
+    			}
+
+    			if (dirty & /*result*/ 4 && img_alt_value !== (img_alt_value = /*pokemon*/ ctx[6].name)) {
+    				attr_dev(img, "alt", img_alt_value);
+    			}
+
+    			if (dirty & /*result*/ 4 && t1_value !== (t1_value = /*pokemon*/ ctx[6].name + "")) set_data_dev(t1, t1_value);
+    		},
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(div);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_each_block.name,
+    		type: "each",
+    		source: "(34:4) {#each result as pokemon}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
     function create_fragment(ctx) {
     	let main;
     	let h1;
@@ -362,17 +448,18 @@ var app = (function () {
     	let t1;
     	let t2;
     	let t3;
-    	let h2;
-    	let t4;
-    	let t5;
     	let input;
-    	let t6;
-    	let ul;
-    	let li;
-    	let img;
-    	let img_src_value;
+    	let t4;
+    	let div;
     	let mounted;
     	let dispose;
+    	let each_value = /*result*/ ctx[2];
+    	validate_each_argument(each_value);
+    	let each_blocks = [];
+
+    	for (let i = 0; i < each_value.length; i += 1) {
+    		each_blocks[i] = create_each_block(get_each_context(ctx, each_value, i));
+    	}
 
     	const block = {
     		c: function create() {
@@ -382,28 +469,24 @@ var app = (function () {
     			t1 = text(/*user*/ ctx[0]);
     			t2 = text("!");
     			t3 = space();
-    			h2 = element("h2");
-    			t4 = text(/*name*/ ctx[1]);
-    			t5 = space();
     			input = element("input");
-    			t6 = space();
-    			ul = element("ul");
-    			li = element("li");
-    			img = element("img");
-    			attr_dev(h1, "class", "svelte-1e9puaw");
-    			add_location(h1, file, 22, 2, 487);
-    			add_location(h2, file, 23, 2, 512);
+    			t4 = space();
+    			div = element("div");
+
+    			for (let i = 0; i < each_blocks.length; i += 1) {
+    				each_blocks[i].c();
+    			}
+
+    			attr_dev(h1, "class", "svelte-7z1k4i");
+    			add_location(h1, file, 24, 2, 533);
     			attr_dev(input, "type", "text");
     			attr_dev(input, "placeholder", "search pokemon");
-    			add_location(input, file, 24, 2, 530);
-    			if (img.src !== (img_src_value = `./pokemon/${/*name*/ ctx[1]}.jpg`)) attr_dev(img, "src", img_src_value);
-    			attr_dev(img, "alt", /*name*/ ctx[1]);
-    			attr_dev(img, "width", "200");
-    			add_location(img, file, 32, 8, 651);
-    			add_location(li, file, 32, 4, 647);
-    			add_location(ul, file, 31, 2, 638);
-    			attr_dev(main, "class", "svelte-1e9puaw");
-    			add_location(main, file, 21, 0, 478);
+    			attr_dev(input, "class", "svelte-7z1k4i");
+    			add_location(input, file, 25, 2, 558);
+    			attr_dev(div, "class", "container svelte-7z1k4i");
+    			add_location(div, file, 32, 2, 666);
+    			attr_dev(main, "class", "svelte-7z1k4i");
+    			add_location(main, file, 23, 0, 524);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -415,20 +498,19 @@ var app = (function () {
     			append_dev(h1, t1);
     			append_dev(h1, t2);
     			append_dev(main, t3);
-    			append_dev(main, h2);
-    			append_dev(h2, t4);
-    			append_dev(main, t5);
     			append_dev(main, input);
     			set_input_value(input, /*name*/ ctx[1]);
-    			append_dev(main, t6);
-    			append_dev(main, ul);
-    			append_dev(ul, li);
-    			append_dev(li, img);
+    			append_dev(main, t4);
+    			append_dev(main, div);
+
+    			for (let i = 0; i < each_blocks.length; i += 1) {
+    				each_blocks[i].m(div, null);
+    			}
 
     			if (!mounted) {
     				dispose = [
-    					listen_dev(input, "input", /*input_input_handler*/ ctx[2]),
-    					listen_dev(input, "input", change, false, false, false)
+    					listen_dev(input, "input", /*input_input_handler*/ ctx[4]),
+    					listen_dev(input, "input", /*change*/ ctx[3], false, false, false)
     				];
 
     				mounted = true;
@@ -436,24 +518,40 @@ var app = (function () {
     		},
     		p: function update(ctx, [dirty]) {
     			if (dirty & /*user*/ 1) set_data_dev(t1, /*user*/ ctx[0]);
-    			if (dirty & /*name*/ 2) set_data_dev(t4, /*name*/ ctx[1]);
 
     			if (dirty & /*name*/ 2 && input.value !== /*name*/ ctx[1]) {
     				set_input_value(input, /*name*/ ctx[1]);
     			}
 
-    			if (dirty & /*name*/ 2 && img.src !== (img_src_value = `./pokemon/${/*name*/ ctx[1]}.jpg`)) {
-    				attr_dev(img, "src", img_src_value);
-    			}
+    			if (dirty & /*result*/ 4) {
+    				each_value = /*result*/ ctx[2];
+    				validate_each_argument(each_value);
+    				let i;
 
-    			if (dirty & /*name*/ 2) {
-    				attr_dev(img, "alt", /*name*/ ctx[1]);
+    				for (i = 0; i < each_value.length; i += 1) {
+    					const child_ctx = get_each_context(ctx, each_value, i);
+
+    					if (each_blocks[i]) {
+    						each_blocks[i].p(child_ctx, dirty);
+    					} else {
+    						each_blocks[i] = create_each_block(child_ctx);
+    						each_blocks[i].c();
+    						each_blocks[i].m(div, null);
+    					}
+    				}
+
+    				for (; i < each_blocks.length; i += 1) {
+    					each_blocks[i].d(1);
+    				}
+
+    				each_blocks.length = each_value.length;
     			}
     		},
     		i: noop,
     		o: noop,
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(main);
+    			destroy_each(each_blocks, detaching);
     			mounted = false;
     			run_all(dispose);
     		}
@@ -470,25 +568,26 @@ var app = (function () {
     	return block;
     }
 
-    function change() {
-    	console.log("Change 🐹");
-    }
-
     function instance($$self, $$props, $$invalidate) {
     	let { $$slots: slots = {}, $$scope } = $$props;
     	validate_slots("App", slots, []);
     	let { user } = $$props;
-    	let name = "pikachu";
-    	let src = "./pokemon/abra.jpg";
-    	let pokemons = {};
-    	let result = {};
+    	let name = "";
+    	let pokemons = [];
+    	let result = [];
 
     	onMount(async () => {
-    		await fetch("https://pokeapi.co/api/v2/pokemon?limit=1118&offset=0").then(res => res.json()).then(response => {
+    		await fetch("https://pokeapi.co/api/v2/pokemon?limit=100&offset=0").then(res => res.json()).then(response => {
     			pokemons = response.results;
     			console.log("🐹", pokemons);
     		});
+
+    		change();
     	});
+
+    	function change() {
+    		$$invalidate(2, result = pokemons.filter(pokemon => pokemon.name.substring(0, name.length) === name));
+    	}
 
     	const writable_props = ["user"];
 
@@ -509,7 +608,6 @@ var app = (function () {
     		onMount,
     		user,
     		name,
-    		src,
     		pokemons,
     		result,
     		change
@@ -518,16 +616,15 @@ var app = (function () {
     	$$self.$inject_state = $$props => {
     		if ("user" in $$props) $$invalidate(0, user = $$props.user);
     		if ("name" in $$props) $$invalidate(1, name = $$props.name);
-    		if ("src" in $$props) src = $$props.src;
     		if ("pokemons" in $$props) pokemons = $$props.pokemons;
-    		if ("result" in $$props) result = $$props.result;
+    		if ("result" in $$props) $$invalidate(2, result = $$props.result);
     	};
 
     	if ($$props && "$$inject" in $$props) {
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	return [user, name, input_input_handler];
+    	return [user, name, result, change, input_input_handler];
     }
 
     class App extends SvelteComponentDev {
